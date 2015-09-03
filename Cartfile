@@ -1,0 +1,8 @@
+# Alamofire
+github "Alamofire/Alamofire"
+ 
+# SwifyJSON
+github "SwiftyJSON/SwiftyJSON"
+
+# Realm Swift
+github "realm/realm-cocoa"

@@ -1,0 +1,495 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		891ECC5B1B9878B2008B8D80 /* NutritionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 891ECC5A1B9878B2008B8D80 /* NutritionCell.swift */; };
+		895639901B96DE5D00A18061 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8956398F1B96DE5D00A18061 /* AppDelegate.swift */; };
+		895639921B96DE5D00A18061 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 895639911B96DE5D00A18061 /* ViewController.swift */; };
+		895639951B96DE5D00A18061 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 895639931B96DE5D00A18061 /* Main.storyboard */; };
+		895639971B96DE5D00A18061 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 895639961B96DE5D00A18061 /* Images.xcassets */; };
+		8956399A1B96DE5D00A18061 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 895639981B96DE5D00A18061 /* LaunchScreen.xib */; };
+		895639A61B96DE5D00A18061 /* FoodCaloriesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 895639A51B96DE5D00A18061 /* FoodCaloriesTests.swift */; };
+		895639B01B96E8B100A18061 /* FoodCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 895639AF1B96E8B100A18061 /* FoodCell.swift */; };
+		895639B41B96ECE700A18061 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 895639B21B96ECE700A18061 /* Alamofire.framework */; };
+		895639B51B96ECE700A18061 /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 895639B31B96ECE700A18061 /* SwiftyJSON.framework */; };
+		895639B91B96EEBA00A18061 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 895639B81B96EEBA00A18061 /* Config.swift */; };
+		895639BB1B96F0E500A18061 /* Food.swift in Sources */ = {isa = PBXBuildFile; fileRef = 895639BA1B96F0E500A18061 /* Food.swift */; };
+		895639BE1B97183600A18061 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 895639BC1B97183600A18061 /* Realm.framework */; };
+		895639BF1B97183600A18061 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 895639BD1B97183600A18061 /* RealmSwift.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		895639A01B96DE5D00A18061 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 895639821B96DE5D00A18061 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 895639891B96DE5D00A18061;
+			remoteInfo = FoodCalories;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		891ECC5A1B9878B2008B8D80 /* NutritionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NutritionCell.swift; sourceTree = "<group>"; };
+		8956398A1B96DE5D00A18061 /* FoodCalories.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FoodCalories.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8956398E1B96DE5D00A18061 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8956398F1B96DE5D00A18061 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		895639911B96DE5D00A18061 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		895639941B96DE5D00A18061 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		895639961B96DE5D00A18061 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		895639991B96DE5D00A18061 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		8956399F1B96DE5D00A18061 /* FoodCaloriesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FoodCaloriesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		895639A41B96DE5D00A18061 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		895639A51B96DE5D00A18061 /* FoodCaloriesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodCaloriesTests.swift; sourceTree = "<group>"; };
+		895639AF1B96E8B100A18061 /* FoodCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodCell.swift; sourceTree = "<group>"; };
+		895639B21B96ECE700A18061 /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = SOURCE_ROOT; };
+		895639B31B96ECE700A18061 /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = Carthage/Build/iOS/SwiftyJSON.framework; sourceTree = SOURCE_ROOT; };
+		895639B81B96EEBA00A18061 /* Config.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
+		895639BA1B96F0E500A18061 /* Food.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Food.swift; sourceTree = "<group>"; };
+		895639BC1B97183600A18061 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = Carthage/Build/iOS/Realm.framework; sourceTree = SOURCE_ROOT; };
+		895639BD1B97183600A18061 /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealmSwift.framework; path = Carthage/Build/iOS/RealmSwift.framework; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		895639871B96DE5D00A18061 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				895639BE1B97183600A18061 /* Realm.framework in Frameworks */,
+				895639B51B96ECE700A18061 /* SwiftyJSON.framework in Frameworks */,
+				895639BF1B97183600A18061 /* RealmSwift.framework in Frameworks */,
+				895639B41B96ECE700A18061 /* Alamofire.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8956399C1B96DE5D00A18061 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		895639811B96DE5D00A18061 = {
+			isa = PBXGroup;
+			children = (
+				8956398C1B96DE5D00A18061 /* FoodCalories */,
+				895639A21B96DE5D00A18061 /* FoodCaloriesTests */,
+				8956398B1B96DE5D00A18061 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		8956398B1B96DE5D00A18061 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8956398A1B96DE5D00A18061 /* FoodCalories.app */,
+				8956399F1B96DE5D00A18061 /* FoodCaloriesTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8956398C1B96DE5D00A18061 /* FoodCalories */ = {
+			isa = PBXGroup;
+			children = (
+				8956398F1B96DE5D00A18061 /* AppDelegate.swift */,
+				895639B81B96EEBA00A18061 /* Config.swift */,
+				895639911B96DE5D00A18061 /* ViewController.swift */,
+				895639AF1B96E8B100A18061 /* FoodCell.swift */,
+				891ECC5A1B9878B2008B8D80 /* NutritionCell.swift */,
+				895639BA1B96F0E500A18061 /* Food.swift */,
+				895639931B96DE5D00A18061 /* Main.storyboard */,
+				895639961B96DE5D00A18061 /* Images.xcassets */,
+				895639981B96DE5D00A18061 /* LaunchScreen.xib */,
+				895639B11B96ECD600A18061 /* Frameworks */,
+				8956398D1B96DE5D00A18061 /* Supporting Files */,
+			);
+			path = FoodCalories;
+			sourceTree = "<group>";
+		};
+		8956398D1B96DE5D00A18061 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				8956398E1B96DE5D00A18061 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		895639A21B96DE5D00A18061 /* FoodCaloriesTests */ = {
+			isa = PBXGroup;
+			children = (
+				895639A51B96DE5D00A18061 /* FoodCaloriesTests.swift */,
+				895639A31B96DE5D00A18061 /* Supporting Files */,
+			);
+			path = FoodCaloriesTests;
+			sourceTree = "<group>";
+		};
+		895639A31B96DE5D00A18061 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				895639A41B96DE5D00A18061 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		895639B11B96ECD600A18061 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				895639BC1B97183600A18061 /* Realm.framework */,
+				895639BD1B97183600A18061 /* RealmSwift.framework */,
+				895639B21B96ECE700A18061 /* Alamofire.framework */,
+				895639B31B96ECE700A18061 /* SwiftyJSON.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		895639891B96DE5D00A18061 /* FoodCalories */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 895639A91B96DE5D00A18061 /* Build configuration list for PBXNativeTarget "FoodCalories" */;
+			buildPhases = (
+				895639861B96DE5D00A18061 /* Sources */,
+				895639871B96DE5D00A18061 /* Frameworks */,
+				895639881B96DE5D00A18061 /* Resources */,
+				895639B61B96ED3F00A18061 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FoodCalories;
+			productName = FoodCalories;
+			productReference = 8956398A1B96DE5D00A18061 /* FoodCalories.app */;
+			productType = "com.apple.product-type.application";
+		};
+		8956399E1B96DE5D00A18061 /* FoodCaloriesTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 895639AC1B96DE5D00A18061 /* Build configuration list for PBXNativeTarget "FoodCaloriesTests" */;
+			buildPhases = (
+				8956399B1B96DE5D00A18061 /* Sources */,
+				8956399C1B96DE5D00A18061 /* Frameworks */,
+				8956399D1B96DE5D00A18061 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				895639A11B96DE5D00A18061 /* PBXTargetDependency */,
+			);
+			name = FoodCaloriesTests;
+			productName = FoodCaloriesTests;
+			productReference = 8956399F1B96DE5D00A18061 /* FoodCaloriesTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		895639821B96DE5D00A18061 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0630;
+				ORGANIZATIONNAME = Coolheart;
+				TargetAttributes = {
+					895639891B96DE5D00A18061 = {
+						CreatedOnToolsVersion = 6.3.2;
+					};
+					8956399E1B96DE5D00A18061 = {
+						CreatedOnToolsVersion = 6.3.2;
+						TestTargetID = 895639891B96DE5D00A18061;
+					};
+				};
+			};
+			buildConfigurationList = 895639851B96DE5D00A18061 /* Build configuration list for PBXProject "FoodCalories" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 895639811B96DE5D00A18061;
+			productRefGroup = 8956398B1B96DE5D00A18061 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				895639891B96DE5D00A18061 /* FoodCalories */,
+				8956399E1B96DE5D00A18061 /* FoodCaloriesTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		895639881B96DE5D00A18061 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				895639951B96DE5D00A18061 /* Main.storyboard in Resources */,
+				8956399A1B96DE5D00A18061 /* LaunchScreen.xib in Resources */,
+				895639971B96DE5D00A18061 /* Images.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8956399D1B96DE5D00A18061 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		895639B61B96ED3F00A18061 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/Alamofire.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/SwiftyJSON.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/Realm.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/RealmSwift.framework",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		895639861B96DE5D00A18061 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				895639921B96DE5D00A18061 /* ViewController.swift in Sources */,
+				895639B91B96EEBA00A18061 /* Config.swift in Sources */,
+				891ECC5B1B9878B2008B8D80 /* NutritionCell.swift in Sources */,
+				895639BB1B96F0E500A18061 /* Food.swift in Sources */,
+				895639B01B96E8B100A18061 /* FoodCell.swift in Sources */,
+				895639901B96DE5D00A18061 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8956399B1B96DE5D00A18061 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				895639A61B96DE5D00A18061 /* FoodCaloriesTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		895639A11B96DE5D00A18061 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 895639891B96DE5D00A18061 /* FoodCalories */;
+			targetProxy = 895639A01B96DE5D00A18061 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		895639931B96DE5D00A18061 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				895639941B96DE5D00A18061 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		895639981B96DE5D00A18061 /* LaunchScreen.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				895639991B96DE5D00A18061 /* Base */,
+			);
+			name = LaunchScreen.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		895639A71B96DE5D00A18061 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		895639A81B96DE5D00A18061 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		895639AA1B96DE5D00A18061 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
+				INFOPLIST_FILE = FoodCalories/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		895639AB1B96DE5D00A18061 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
+				INFOPLIST_FILE = FoodCalories/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		895639AD1B96DE5D00A18061 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = FoodCaloriesTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FoodCalories.app/FoodCalories";
+			};
+			name = Debug;
+		};
+		895639AE1B96DE5D00A18061 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = FoodCaloriesTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FoodCalories.app/FoodCalories";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		895639851B96DE5D00A18061 /* Build configuration list for PBXProject "FoodCalories" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				895639A71B96DE5D00A18061 /* Debug */,
+				895639A81B96DE5D00A18061 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		895639A91B96DE5D00A18061 /* Build configuration list for PBXNativeTarget "FoodCalories" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				895639AA1B96DE5D00A18061 /* Debug */,
+				895639AB1B96DE5D00A18061 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		895639AC1B96DE5D00A18061 /* Build configuration list for PBXNativeTarget "FoodCaloriesTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				895639AD1B96DE5D00A18061 /* Debug */,
+				895639AE1B96DE5D00A18061 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 895639821B96DE5D00A18061 /* Project object */;
+}
