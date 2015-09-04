@@ -9,5 +9,5 @@
 import Foundation
 
 let kKimonLabsApiKey = "Li54EnVqNQHoPy8eSVGmkRB9MugFF5s6"
-let kDataSourceHolmusk = 1
-let kDataSourceKimonoLabs = 2
+let kDataSourceHolmusk = 0
+let kDataSourceKimonoLabs = 1

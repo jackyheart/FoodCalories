@@ -6,7 +6,6 @@
 //  Copyright (c) 2015 Coolheart. All rights reserved.
 //
 
-import Foundation
 import RealmSwift
 
 class Food: Object {

@@ -12,23 +12,27 @@ import Alamofire
 import SwiftyJSON
 import RealmSwift
 
-class ViewController: UIViewController, UITableViewDataSource, UIScrollViewDelegate {
+class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UITextFieldDelegate {
     
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var searchTF: UITextField!
+    @IBOutlet weak var lblSearchResults: UILabel!
     
-    private var searchTerm:String = ""
+    private let realm = Realm()
+    private let kTableHeaderHeight:CGFloat = 170.0
+    private var searchTermGlobal:String = ""
     private var dataArray:[Food] = []
     private var imageLinkArray:[String] = []
-    private var refreshControl = UIRefreshControl()
-    private let kTableHeaderHeight:CGFloat = 170.0
+    private let refreshControl = UIRefreshControl()
     private var headerView:UIView!
+    private var dataSourceIndex:Int!
+    private var autocompleteTableView: UITableView!
+    private var historySearchArray:[String] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        self.navigationController!.hidesBarsOnSwipe = true;
-
         //header view
         self.headerView = self.tableView.tableHeaderView
         self.tableView.tableHeaderView = nil
@@ -47,9 +51,25 @@ class ViewController: UIViewController, UITableViewDataSource, UIScrollViewDeleg
         doubleTapGesture.numberOfTouchesRequired = 1
         self.tableView.addGestureRecognizer(doubleTapGesture)
         
+        //auto complete
+        let searchFrame = self.searchTF.frame
+        self.autocompleteTableView = UITableView(frame: CGRectMake(
+            searchFrame.origin.x,
+            searchFrame.origin.y + searchFrame.size.height,
+            self.view.frame.size.width - 16,
+            120),
+            style: UITableViewStyle.Plain)
+        self.autocompleteTableView.dataSource = self
+        self.autocompleteTableView.delegate = self
+        self.autocompleteTableView.scrollEnabled = true
+        self.autocompleteTableView.hidden = true
+        self.headerView.addSubview(self.autocompleteTableView)
+        
+        //data source
+        self.dataSourceIndex = kDataSourceHolmusk
+        
         //load data
-        self.searchTerm = "apple"
-        loadData(searchTerm)
+        //loadData(self.searchTermGlobal)
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -57,9 +77,6 @@ class ViewController: UIViewController, UITableViewDataSource, UIScrollViewDeleg
         
         updateHeaderView()
         self.headerView.hidden = false
-                
-        //var scrollView = UIScrollView()
-        //self.scrollViewDidScroll(scrollView)
     }
     
     override func didReceiveMemoryWarning() {
@@ -67,18 +84,24 @@ class ViewController: UIViewController, UITableViewDataSource, UIScrollViewDeleg
         // Dispose of any resources that can be recreated.
     }
     
+    //MARK: - IBActions
+    
+    @IBAction func dataSourceChanged(sender: AnyObject) {
+    
+        let segment = sender as! UISegmentedControl
+        self.dataSourceIndex = segment.selectedSegmentIndex
+    }
+    
     //MARK: - Refresh
     
     func refreshTable() {
     
-        let realm = Realm()
-        
-        realm.write { () -> Void in
+        self.realm.write { () -> Void in
             
-            realm.delete(realm.objects(Food))
+            self.realm.delete(self.realm.objects(Food))
         }
         
-        loadData(self.searchTerm)
+        loadData(self.searchTermGlobal)
     }
     
     //MARK: - UITapGesture
@@ -88,6 +111,12 @@ class ViewController: UIViewController, UITableViewDataSource, UIScrollViewDeleg
         if tap.state == UIGestureRecognizerState.Ended {
         
             let point = tap.locationInView(tap.view)
+            
+            if self.tableView == nil {
+            
+                return
+            }
+            
             let indexPath = self.tableView.indexPathForRowAtPoint(point)!
             
             let cell = self.tableView.cellForRowAtIndexPath(indexPath) as! FoodCell
@@ -110,6 +139,12 @@ class ViewController: UIViewController, UITableViewDataSource, UIScrollViewDeleg
                 if finished {
                 
                     cell.isFront = !cell.isFront
+                    
+                    if !cell.isFront {
+                    
+                        //is currently backside
+                        cell.loadNutritionData()
+                    }
                 }
             })
         }
@@ -130,10 +165,9 @@ class ViewController: UIViewController, UITableViewDataSource, UIScrollViewDeleg
     
     func loadData(searchTerm:String) {
     
-        let realm = Realm()
         self.dataArray.removeAll(keepCapacity: true)//remove current data
         
-        let predicate = NSPredicate(format: "name CONTAINS [c]%@", searchTerm)
+        let predicate = NSPredicate(format: "name BEGINSWITH [c]%@", searchTerm)
         let results = realm.objects(Food).filter(predicate)
 
         if results.count > 0 {
@@ -151,21 +185,29 @@ class ViewController: UIViewController, UITableViewDataSource, UIScrollViewDeleg
         
             //Otherwise, pull from network
             
-            //kimonolabs
-//            let URLSource = "https://www.kimonolabs.com/api/ondemand/1uv7lfx2"
-//            let params = ["apikey":kKimonLabsApiKey, "q":searchTerm]
+            //default to holmusk
+            var URLSource = "http://test.holmusk.com/food/search"
+            var params = ["q":searchTerm]
             
-            //holmusk
-            let URLSource = "http://test.holmusk.com/food/search"
-            let params = ["q":searchTerm]
-            let dataSourceType = kDataSourceHolmusk
+            if self.dataSourceIndex == kDataSourceKimonoLabs {
             
-            let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
-            configuration.timeoutIntervalForRequest = 102 // seconds
-            let manager = Alamofire.Manager(configuration: configuration)
+                //kimonolabs
+                URLSource = "https://www.kimonolabs.com/api/ondemand/1uv7lfx2"
+                params = ["apikey":kKimonLabsApiKey, "q":searchTerm]
+            }
+            
+            //let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
+            //configuration.timeoutIntervalForRequest = 102 // seconds
+            //let manager = Alamofire.Manager(configuration: configuration)
+            
+            let loader = MBProgressHUD.showHUDAddedTo(self.view, animated: true)
+            loader.labelText = "Load data..."
             
             Alamofire.request(.GET, URLSource, parameters: params).responseJSON() {
                 (_, _, data, error) -> Void in
+                
+                self.refreshControl.endRefreshing()
+                loader.hide(true)
                 
                 if error != nil {
                     
@@ -175,14 +217,14 @@ class ViewController: UIViewController, UITableViewDataSource, UIScrollViewDeleg
                     
                     let json = JSON(data!)
                     
-                    if dataSourceType == kDataSourceHolmusk {
+                    if self.dataSourceIndex == kDataSourceHolmusk {
                     
-                        realm.write({ () -> Void in
-                            
-                            self.refreshControl.endRefreshing()
-                            
+                        self.realm.write({ () -> Void in
+
                             for jsonDict in json {
                             
+                                print("jsonDict:\(jsonDict)\n")
+                                
                                 let foodName = jsonDict.1["name"].string!
                                 let portions = jsonDict.1["portions"]
                                 
@@ -194,42 +236,70 @@ class ViewController: UIViewController, UITableViewDataSource, UIScrollViewDeleg
                                     
                                     let importantNutrients = foodDict.1["nutrients"]["important"]
                                     
-                                    food.calories = String(importantNutrients["calories"]["value"].intValue) + " " + importantNutrients["calories"]["unit"].string!
+                                    if importantNutrients["calories"] != nil {
+                                        food.calories = String(importantNutrients["calories"]["value"].intValue) + " " + importantNutrients["calories"]["unit"].string!
+                                    }
                                     
-                                    food.fat = String(importantNutrients["total_fats"]["value"].intValue) + " " + importantNutrients["total_fats"]["unit"].string!
+                                    if importantNutrients["total_fats"] != nil {
+                                        food.fat = String(importantNutrients["total_fats"]["value"].intValue) + " " + importantNutrients["total_fats"]["unit"].string!
+                                    }
                                     
-                                    food.fat_saturated = String(importantNutrients["saturated"]["value"].intValue) + " " + importantNutrients["saturated"]["unit"].string!
+                                    if importantNutrients["saturated"] != nil {
+                                        food.fat_saturated = String(importantNutrients["saturated"]["value"].intValue) + " " + importantNutrients["saturated"]["unit"].string!
+                                    }
                                     
-                                    food.fat_polyunsaturated = String(importantNutrients["polyunsaturated"]["value"].intValue) + " " + importantNutrients["polyunsaturated"]["unit"].string!
+                                    if importantNutrients["polyunsaturated"] != nil {
+                                        food.fat_polyunsaturated = String(importantNutrients["polyunsaturated"]["value"].intValue) + " " + importantNutrients["polyunsaturated"]["unit"].string!
+                                    }
                                     
-                                    food.fat_monosaturated = String(importantNutrients["monounsaturated"]["value"].intValue) + " " + importantNutrients["monounsaturated"]["unit"].string!
+                                    if importantNutrients["monounsaturated"] != nil {
+                                        food.fat_monosaturated = String(importantNutrients["monounsaturated"]["value"].intValue) + " " + importantNutrients["monounsaturated"]["unit"].string!
+                                    }
                                     
-                                    food.cholesterol = String(importantNutrients["cholesterol"]["value"].intValue) + " " + importantNutrients["cholesterol"]["unit"].string!
+                                    if importantNutrients["cholesterol"] != nil {
+                                        food.cholesterol = String(importantNutrients["cholesterol"]["value"].intValue) + " " + importantNutrients["cholesterol"]["unit"].string!
+                                    }
                                     
-                                    food.sodium = String(importantNutrients["sodium"]["value"].intValue) + " " + importantNutrients["sodium"]["unit"].string!
+                                    if importantNutrients["sodium"] != nil {
+                                        food.sodium = String(importantNutrients["sodium"]["value"].intValue) + " " + importantNutrients["sodium"]["unit"].string!
+                                    }
                                     
-                                    food.carbohydrate = String(importantNutrients["total_carbs"]["value"].intValue) + " " + importantNutrients["total_carbs"]["unit"].string!
+                                    if importantNutrients["total_carbs"] != nil {
+                                        food.carbohydrate = String(importantNutrients["total_carbs"]["value"].intValue) + " " + importantNutrients["total_carbs"]["unit"].string!
+                                    }
                                     
-                                    food.fibre = String(importantNutrients["dietary_fibre"]["value"].intValue) + " " + importantNutrients["dietary_fibre"]["unit"].string!
+                                    if importantNutrients["dietary_fibre"] != nil {
+                                        food.fibre = String(importantNutrients["dietary_fibre"]["value"].intValue) + " " + importantNutrients["dietary_fibre"]["unit"].string!
+                                    }
                                     
-                                    food.sugar = String(importantNutrients["sugar"]["value"].intValue) + " " + importantNutrients["sugar"]["unit"].string!
+                                    if importantNutrients["sugar"] != nil {
+                                        food.sugar = String(importantNutrients["sugar"]["value"].intValue) + " " + importantNutrients["sugar"]["unit"].string!
+                                    }
                                     
-                                    food.protein = String(importantNutrients["protein"]["value"].intValue) + " " + importantNutrients["protein"]["unit"].string!
+                                    if importantNutrients["protein"] != nil {
+                                        food.protein = String(importantNutrients["protein"]["value"].intValue) + " " + importantNutrients["protein"]["unit"].string!
+                                    }
                                     
-                                    food.potassium = String(importantNutrients["potassium"]["value"].intValue) + " " + importantNutrients["potassium"]["unit"].string!
+                                    if importantNutrients["potassium"] != nil {
+                                        food.potassium = String(importantNutrients["potassium"]["value"].intValue) + " " + importantNutrients["potassium"]["unit"].string!
+                                    }
                                     
-                                    realm.add(food, update: false)
+                                    self.realm.add(food, update: false)
                                     self.dataArray.append(food)
                                 }
                             }
-
+                            
                             print("dataArray count: \(self.dataArray.count)\n")
-                            self.tableView.reloadData()
-                        })
+                            
+                            if self.dataArray.count > 0 {
+                            
+                                self.loadImagesFromGoogleWithSearchTerm(searchTerm)
+                            }
+                        })//end write
                     }
-                    else if dataSourceType == kDataSourceKimonoLabs {
+                    else if self.dataSourceIndex == kDataSourceKimonoLabs {
 
-                        realm.write({ () -> Void in
+                        self.realm.write({ () -> Void in
                             
                             for foodDict in json["Food"] {
                                 
@@ -241,107 +311,199 @@ class ViewController: UIViewController, UITableViewDataSource, UIScrollViewDeleg
                                 food.carbohydrate = foodDict.1["carbs"]["text"].string!
                                 food.protein = foodDict.1["protein"]["text"].string!
                                 
-                                realm.add(food, update: false)
+                                self.realm.add(food, update: false)
                                 self.dataArray.append(food)
                             }
-                        })
+                            
+                            if self.dataArray.count > 0 {
+                                
+                                self.loadImagesFromGoogleWithSearchTerm(searchTerm)
+                            }
+                        })//end write
                     }
                     
+                    //reload
                     self.tableView.reloadData()
+                    
                 }//end else
             }//end Alamofire request
             
-            //Google Images
-            Alamofire.request(.GET, "https://www.googleapis.com/customsearch/v1",
-                parameters:
-                ["key": "AIzaSyAXTN_pC9N-I_H-ko2vvgDjxgd2DPLu5Mk",
-                    "cx":"018231649527957198634:l9uospo7pa0",
-                    "searchType":"image",
-                    "q":searchTerm]).responseJSON() {
-                        
-                        (_, _, data, _) in
-                        
-                        //self.refreshControl.endRefreshing()
-                        //MBProgressHUD.hideAllHUDsForView(self.view, animated: true)
-                        
-                        let json = JSON(data!)
-                        //println(json)
-                        
-                        let itemArray = json["items"]
-                        print("itemArray count: \(itemArray.count)\n")
-                        
-                        for itemDict in itemArray {
-                            
-                            self.imageLinkArray.append(itemDict.1["image"]["thumbnailLink"].string!)
-                        }
-                        
-                        self.tableView.reloadData()
-                        
-            }//end responseJSON
-            
         }//end else
+    }
+    
+    func loadImagesFromGoogleWithSearchTerm(searchTerm:String) {
+    
+        //Google Images
+        Alamofire.request(.GET, "https://www.googleapis.com/customsearch/v1",
+            parameters:
+            ["key": "AIzaSyAXTN_pC9N-I_H-ko2vvgDjxgd2DPLu5Mk",
+                "cx":"018231649527957198634:l9uospo7pa0",
+                "searchType":"image",
+                "q":searchTerm]).responseJSON() {
+                    
+                    (_, _, data, _) in
+                    
+                    let json = JSON(data!)
+                    
+                    let itemArray = json["items"]
+                    print("itemArray count: \(itemArray.count)\n")
+                    
+                    self.imageLinkArray.removeAll(keepCapacity: true)
+                    
+                    for itemDict in itemArray {
+                        
+                        self.imageLinkArray.append(itemDict.1["image"]["thumbnailLink"].string!)
+                    }
+                    
+                    self.tableView.reloadData()
+                    
+        }//end responseJSON
     }
 
     //MARK: - UITableViewDataSource
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
+        if self.autocompleteTableView != nil {
+        
+            if tableView == self.autocompleteTableView {
+            
+                return self.historySearchArray.count
+            }
+        }
+        
+        self.lblSearchResults.text = "Search Results for: \(self.searchTermGlobal) (\(self.dataArray.count) results)"
+        
         return self.dataArray.count
+    }
+    
+    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        
+        if tableView == self.autocompleteTableView {
+        
+            return 24.0
+        }
+        
+        return tableView.rowHeight
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCellWithIdentifier("CellIdentifier", forIndexPath: indexPath) as! FoodCell
-                
-        if indexPath.row < self.dataArray.count {
+        var masterCell:UITableViewCell!
         
-            let food = self.dataArray[indexPath.row] as Food
+        if tableView == self.autocompleteTableView {
+        
+            let identifier = "AutoCompleteCellIdentifier"
+            
+            var cell = tableView.dequeueReusableCellWithIdentifier(identifier) as? UITableViewCell
+            
+            if cell == nil {
+                cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: identifier)
+            }
+
+            //data
+            if indexPath.row < self.historySearchArray.count {
+                let searchString = self.historySearchArray[indexPath.row]
+                cell!.textLabel?.text = searchString
+            }
+            
+            masterCell = cell
+        }
+        else if tableView == self.tableView {
+        
+            let cell = tableView.dequeueReusableCellWithIdentifier("CellIdentifier", forIndexPath: indexPath) as! FoodCell
+            
+            //card visibility
+            if cell.isFront {
+                cell.viewFront.hidden = false
+                cell.viewBack.hidden = true
+            } else {
+                cell.viewFront.hidden = true
+                cell.viewBack.hidden = false
+            }
             
             //data
-            cell.food = food
+            if indexPath.row < self.dataArray.count {
             
-            //front view
-            cell.lblName.text = "per \(food.serving)"
-            cell.lblCals.text = food.calories
-            cell.lblFat.text = food.fat
-            cell.lblCarbs.text = food.carbohydrate
-            cell.lblProt.text = food.protein
-            
-            //back view
-            cell.lblBackServings.text = cell.lblName.text
-            
-            //TODO: temp
-            cell.loadNutritionData()
-        }
-        
-        let imageIndex = indexPath.row % 10
-        
-        if imageIndex < self.imageLinkArray.count {
-            
-            let thumbLink = self.imageLinkArray[imageIndex] as String
-        
-            Alamofire.request(.GET, thumbLink).responseImage() {
-                (request, _, image, error) in
+                let food = self.dataArray[indexPath.row] as Food
+                cell.food = food
                 
-                if error == nil && image != nil {
+                //front view
+                cell.lblName.text = "per \(food.serving)"
+                cell.lblCals.text = food.calories
+                cell.lblFat.text = food.fat
+                cell.lblCarbs.text = food.carbohydrate
+                cell.lblProt.text = food.protein
+                
+                //back view
+                cell.lblBackServings.text = cell.lblName.text
+            }
+            
+            //images
+            let imageIndex = indexPath.row % 10
+            
+            if imageIndex < self.imageLinkArray.count {
+                
+                let thumbLink = self.imageLinkArray[imageIndex] as String
+            
+                Alamofire.request(.GET, thumbLink).responseImage() {
+                    (request, _, image, error) in
                     
-                    cell.bgImgView?.image = image
-                }
-                else
-                {
-                    println("error" + error!.localizedDescription)
-                }
-            }//end responseImage
+                    if error == nil && image != nil {
+                        
+                        cell.bgImgView?.image = image
+                        cell.backBgImgView.image = image
+                    }
+                    else
+                    {
+                        println("error" + error!.localizedDescription)
+                    }
+                }//end responseImage
+            }
+            
+            masterCell = cell
         }
 
-        return cell
+        return masterCell
+    }
+    
+    //MARK: - UITableViewDelegate
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        
+        if tableView == self.autocompleteTableView {
+        
+            self.searchTF.resignFirstResponder()
+            self.dismissAutocompleteTableView()
+            
+            let searchString = self.historySearchArray[indexPath.row]
+            self.searchTF.text = searchString
+            self.searchTermGlobal = searchString
+            
+            self.loadData(searchString)
+        }
     }
     
     //MARK: - UIScrollViewDelegate
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
         
+        //sticky header
+        
         updateHeaderView()
+        
+        self.searchTF.resignFirstResponder()
+        
+        //dismiss autocomplete tableview only if the main table view is scrolled
+        /*
+        if scrollView == self.tableView {
+            
+            if self.autocompleteTableView != nil {
+                
+                self.dismissAutocompleteTableView()
+            }
+        }
+        a*/
         
         /*
         let visibleCells = self.tableView.visibleCells() as! [FoodCell]
@@ -353,6 +515,130 @@ class ViewController: UIViewController, UITableViewDataSource, UIScrollViewDeleg
             cell.adjust(cell.frame.origin.y - scrollView.contentOffset.y)
         }
         */
+    }
+    
+    //MARK: - UITextFieldDelegate
+    
+    func textFieldDidBeginEditing(textField: UITextField) {
+        
+        self.refreshControl.endRefreshing()
+        
+        let searchString = textField.text.stringByTrimmingCharactersInSet(NSCharacterSet.newlineCharacterSet())
+        
+        if count(searchString) > 0 {
+            self.showAutocompleteTableView(searchString)
+        }
+    }
+    
+    func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
+        
+        let searchString = textField.text.stringByTrimmingCharactersInSet(NSCharacterSet.newlineCharacterSet())
+        var substring = NSString(string: searchString)
+        substring = substring.stringByReplacingCharactersInRange(range, withString: string)
+        
+        if substring.length == 0 {
+        
+            self.autocompleteTableView.hidden = true
+        
+        } else {
+        
+            self.showAutocompleteTableView(String(substring))
+        }
+        
+        return true
+    }
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        
+        if textField.returnKeyType == UIReturnKeyType.Search {
+        
+            textField.resignFirstResponder()
+            self.dismissAutocompleteTableView()
+            
+            let searchString = textField.text.stringByTrimmingCharactersInSet(NSCharacterSet.newlineCharacterSet())
+            
+            if count(searchString) == 0 {
+            
+                let alertController = UIAlertController(title: "Invalid", message: "Please enter your search term", preferredStyle: UIAlertControllerStyle.Alert)
+                let action = UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil)
+                alertController.addAction(action)
+                
+                self.presentViewController(alertController, animated: true, completion: nil)
+            
+            } else {
+                
+                //global variable
+                self.searchTermGlobal = searchString
+            
+                //check existing history
+                let predicate = NSPredicate(format: "searchString == [c]%@", searchString)
+                let results = self.realm.objects(SearchHistory).filter(predicate)
+                
+                if results.count == 0 {
+                
+                    //save if search term does not exist in database
+                    self.realm.write({ () -> Void in
+                        
+                        let searchHistory = SearchHistory()
+                        searchHistory.searchString = searchString
+                        self.realm.add(searchHistory, update: false)
+                    })
+                }
+
+                self.loadData(searchString)
+                
+            } // end else
+        } // end if
+        
+        return true
+    }
+    
+    //MARK: - Search helper
+    
+    func getSearchHistory(searchString: String) -> [String] {
+    
+        var historyArray:[String] = []
+        let predicate = NSPredicate(format: "searchString BEGINSWITH [c]%@", searchString)
+        let results = self.realm.objects(SearchHistory).filter(predicate).sorted("searchString")
+        
+        let limit = 10
+        var i = 0
+        
+        for result in results {
+            
+            if i < 10 {
+                historyArray.append(result.searchString)
+                i++
+            }
+        }
+        
+        return historyArray
+    }
+    
+    func showAutocompleteTableView(searchString: String) {
+    
+        self.historySearchArray = self.getSearchHistory(searchString)
+        
+        if self.historySearchArray.count == 0 {
+            self.autocompleteTableView.hidden = true
+        }
+        else if self.historySearchArray.count > 0 {
+            self.autocompleteTableView.alpha = 1.0
+            self.autocompleteTableView.hidden = false
+        }
+        
+        self.autocompleteTableView.reloadData()
+    }
+    
+    func dismissAutocompleteTableView() {
+    
+        UIView.animateWithDuration(0.5, animations: { () -> Void in
+            
+            self.autocompleteTableView.alpha = 0.0
+            
+            }, completion: { (finished) -> Void in
+                
+        })
     }
 }
 

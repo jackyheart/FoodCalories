@@ -20,6 +20,7 @@ class FoodCell: UITableViewCell, UITableViewDataSource {
     @IBOutlet weak var bgImgView: UIImageView!
     @IBOutlet weak var nutritionTableView: UITableView!
     @IBOutlet weak var lblBackServings: UILabel!
+    @IBOutlet weak var backBgImgView: UIImageView!
     
     private var leftColumn:[[String:String]] = []
     private var rightColumn:[[String:String]] = []
@@ -35,6 +36,12 @@ class FoodCell: UITableViewCell, UITableViewDataSource {
         self.viewFront.layer.borderColor = UIColor(red: color/255.0, green: color/255.0, blue: color/255.0, alpha: 1.0).CGColor
         self.viewFront.layer.borderWidth = 0.5
         
+        self.viewBack.layer.borderColor = UIColor(red: color/255.0, green: color/255.0, blue: color/255.0, alpha: 1.0).CGColor
+        self.viewBack.layer.borderWidth = 0.5
+        
+        self.nutritionTableView.layer.borderColor = UIColor(red: color/255.0, green: color/255.0, blue: color/255.0, alpha: 1.0).CGColor
+        self.nutritionTableView.layer.borderWidth = 0.5
+
         //shadow
         let view = self.viewFront
         let shadowPath = UIBezierPath(rect: view.layer.bounds)
@@ -44,6 +51,17 @@ class FoodCell: UITableViewCell, UITableViewDataSource {
         view.layer.shadowOpacity = 0.1
         view.layer.shadowRadius = 10.0
         view.layer.shadowPath = shadowPath.CGPath
+        
+        /*
+        let viewBack = self.viewBack
+        let shadowPathBack = UIBezierPath(rect: viewBack.layer.bounds)
+        viewBack.layer.masksToBounds = false
+        viewBack.layer.shadowColor = UIColor.blackColor().CGColor
+        viewBack.layer.shadowOffset = CGSizeMake(1.0, 1.0)
+        viewBack.layer.shadowOpacity = 0.1
+        viewBack.layer.shadowRadius = 10.0
+        viewBack.layer.shadowPath = shadowPathBack.CGPath
+        */
         
         //nutrition table view
         self.nutritionTableView.dataSource = self
