@@ -17,6 +17,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchTF: UITextField!
     @IBOutlet weak var lblSearchResults: UILabel!
+    @IBOutlet weak var noDataLbl: UILabel!
     
     private let realm = Realm()
     private let kTableHeaderHeight:CGFloat = 170.0
@@ -68,8 +69,8 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         //data source
         self.dataSourceIndex = kDataSourceHolmusk
         
-        //load data
-        //loadData(self.searchTermGlobal)
+        //no data
+        self.noDataLbl.hidden = true
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -170,9 +171,15 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         let predicate = NSPredicate(format: "name BEGINSWITH [c]%@", searchTerm)
         let results = realm.objects(Food).filter(predicate)
 
-        if results.count > 0 {
+        if results.count == 0 {
+        
+            self.noDataLbl.hidden = false
+        }
+        else if results.count > 0 {
             
             //If data exist in local database
+            
+            self.noDataLbl.hidden = true
             
             for food in results {
             
@@ -201,7 +208,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             //let manager = Alamofire.Manager(configuration: configuration)
             
             let loader = MBProgressHUD.showHUDAddedTo(self.view, animated: true)
-            loader.labelText = "Load data..."
+            loader.labelText = "Loading data..."
             
             Alamofire.request(.GET, URLSource, parameters: params).responseJSON() {
                 (_, _, data, error) -> Void in
@@ -291,8 +298,13 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                             
                             print("dataArray count: \(self.dataArray.count)\n")
                             
-                            if self.dataArray.count > 0 {
+                            if self.dataArray.count == 0 {
                             
+                                self.noDataLbl.hidden = false
+                            }
+                            else if self.dataArray.count > 0 {
+                            
+                                self.noDataLbl.hidden = true
                                 self.loadImagesFromGoogleWithSearchTerm(searchTerm)
                             }
                         })//end write
@@ -315,8 +327,13 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                                 self.dataArray.append(food)
                             }
                             
-                            if self.dataArray.count > 0 {
+                            if self.dataArray.count == 0 {
                                 
+                                self.noDataLbl.hidden = false
+                            }
+                            else if self.dataArray.count > 0 {
+                                
+                                self.noDataLbl.hidden = true
                                 self.loadImagesFromGoogleWithSearchTerm(searchTerm)
                             }
                         })//end write

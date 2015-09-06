@@ -12,6 +12,7 @@ class FoodCell: UITableViewCell, UITableViewDataSource {
 
     @IBOutlet weak var viewFront: UIView!
     @IBOutlet weak var viewBack: UIView!
+    @IBOutlet weak var viewBackContainer: UIView!
     @IBOutlet weak var lblCals: UILabel!
     @IBOutlet weak var lblFat: UILabel!
     @IBOutlet weak var lblCarbs: UILabel!
@@ -65,6 +66,30 @@ class FoodCell: UITableViewCell, UITableViewDataSource {
         
         //nutrition table view
         self.nutritionTableView.dataSource = self
+        self.nutritionTableView.backgroundColor = UIColor.clearColor()
+        
+        //blur effect
+        let blurEffect: UIBlurEffect = UIBlurEffect(style: UIBlurEffectStyle.Light)
+        
+        //blur view
+        let blurView: UIVisualEffectView = UIVisualEffectView(effect: blurEffect)
+        //blurView.setTranslatesAutoresizingMaskIntoConstraints(false)
+        blurView.frame = CGRectMake(
+            0.0,
+            0.0,
+            UIScreen.mainScreen().bounds.width - 34,
+            self.viewBackContainer.frame.height)
+        //self.viewBackContainer.addSubview(blurView)
+        self.viewBackContainer.insertSubview(blurView, atIndex: 0)
+        
+        //vibrancy view
+        let vibrancyView = UIVisualEffectView(effect: UIVibrancyEffect(forBlurEffect: blurEffect))
+        vibrancyView.setTranslatesAutoresizingMaskIntoConstraints(false)
+        vibrancyView.bounds = blurView.bounds
+        blurView.contentView.addSubview(vibrancyView)
+
+        //background
+        self.backgroundColor = UIColor.clearColor()
     }
     
     override func setSelected(selected: Bool, animated: Bool) {
@@ -132,6 +157,8 @@ class FoodCell: UITableViewCell, UITableViewDataSource {
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCellWithIdentifier("CellIdentifier", forIndexPath: indexPath) as! NutritionCell
+        
+        cell.backgroundColor = UIColor.clearColor()
         
         let leftData = self.leftColumn[indexPath.row] as [String:String]
         let rightData = self.rightColumn[indexPath.row] as [String:String]
