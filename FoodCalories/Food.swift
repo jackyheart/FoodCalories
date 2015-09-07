@@ -24,4 +24,8 @@ class Food: Object {
     dynamic var sugar:String = ""
     dynamic var protein:String = ""
     dynamic var potassium:String = ""
+    dynamic var imageLink:String = ""
+    dynamic var dataSource:Int = kDataSourceHolmusk
+    dynamic var hrefLink:String = "" //for kimonolabs
+    var isFront:Bool = true
 }

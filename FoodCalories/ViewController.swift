@@ -23,7 +23,6 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     private let kTableHeaderHeight:CGFloat = 170.0
     private var searchTermGlobal:String = ""
     private var dataArray:[Food] = []
-    private var imageLinkArray:[String] = []
     private let refreshControl = UIRefreshControl()
     private var headerView:UIView!
     private var dataSourceIndex:Int!
@@ -119,12 +118,13 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             }
             
             let indexPath = self.tableView.indexPathForRowAtPoint(point)!
+            let food = self.dataArray[indexPath.row]
             
             let cell = self.tableView.cellForRowAtIndexPath(indexPath) as! FoodCell
             
             UIView.transitionWithView(cell.contentView, duration: 1.0, options: cell.isFront ? UIViewAnimationOptions.TransitionFlipFromLeft : UIViewAnimationOptions.TransitionFlipFromRight, animations: { () -> Void in
                 
-                if cell.isFront {
+                if food.isFront {
                 
                     cell.viewFront.hidden = true
                     cell.viewBack.hidden = false
@@ -138,13 +138,135 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             }, completion: { (finished) -> Void in
                 
                 if finished {
-                
-                    cell.isFront = !cell.isFront
+
+                    food.isFront = !food.isFront
                     
-                    if !cell.isFront {
+                    if !food.isFront {
                     
                         //is currently backside
-                        cell.loadNutritionData()
+
+                        if self.dataSourceIndex == kDataSourceKimonoLabs && food.dataSource == kDataSourceKimonoLabs {
+                        
+                            var searchURL = food.hrefLink.lastPathComponent
+                            var URLSource = "http://www.kimonolabs.com/api/ondemand/6re1qqi2"
+                            var params =
+                                ["apikey":kKimonLabsApiKey,
+                                    "kimpath3":searchURL]
+
+                            let loader = MBProgressHUD.showHUDAddedTo(self.view, animated: true)
+                            loader.labelText = "Loading data..."
+                            
+                            Alamofire.request(.GET, URLSource, parameters: params).responseJSON() {
+                                (_, _, data, error) -> Void in
+
+                                loader.hide(true)
+                                
+                                if let errorData = error {
+                                    
+                                    println(errorData.localizedDescription)
+                                }
+                                else
+                                {
+                                    let json = JSON(data!)
+                                    //println(json)
+                                    
+                                    /*
+                                    {
+                                    "name" : "FatSecretNutrition",
+                                    "results" : {
+                                    "NutritionFacts" : [
+                                    {
+                                    "Sodium" : "123 mg",
+                                    "CaloriesJoule" : "105 kj",
+                                    "Serving" : "per 100 g",
+                                    "Cholesterol" : "0.6 g",
+                                    "Calories" : "",
+                                    "Fat" : "0.3 g"
+                                    }
+                                    ],
+                                    "Fat" : [
+                                    {
+                                    "Polyunsaturated" : "0 mg",
+                                    "Saturated" : "0 mg",
+                                    "Monounsaturated" : "5.7 g"
+                                    }
+                                    ],
+                                    "Food" : [
+                                    {
+                                    "FoodName" : "Rose-Apples"
+                                    }
+                                    ]
+                                    },
+                                    "count" : 3,
+                                    "url" : "http:\/\/www.fatsecret.com.sg\/calories-nutrition\/generic\/rose-apples"
+                                    }
+                                    */
+                                    
+                                    let realm = Realm()
+                                    realm.write { //write begin
+                                        
+                                        let nutritionData = json["results"]["NutritionFacts"][0]
+                                        
+                                        //Sub-sections of 'Fat'
+                                        
+                                        let fatData = json["results"]["Fat"][0]
+                                        
+                                        if(fatData["Saturated"])
+                                        {
+    
+                                            food.fat_saturated = fatData["Saturated"].string!
+                                        }
+                                        
+                                        if(fatData["Polyunsaturated"])
+                                        {
+                                            food.fat_polyunsaturated = fatData["Polyunsaturated"].string!
+                                        }
+                                        
+                                        if(fatData["Monounsaturated"])
+                                        {
+                                            food.fat_monosaturated = fatData["Monounsaturated"].string!
+                                        }
+                                        //====
+                                        
+                                        
+                                        if(nutritionData["Cholesterol"])
+                                        {
+                                            food.cholesterol = nutritionData["Cholesterol"].string!
+                                        }
+                                        
+                                        if(nutritionData["Sodium"])
+                                        {
+                                            food.sodium = nutritionData["Sodium"].string!
+                                        }
+                                        
+                                        
+                                        //Sub-sections of 'Carbohydrate'
+                                        
+                                        let carboData = json["results"]["Carbohydrate"][0]
+                                        
+                                        if(carboData["Fiber"])
+                                        {
+                                            food.fibre = carboData["Fiber"].string!
+                                        }
+                                        
+                                        if(carboData["Sugar"])
+                                        {
+                                            food.sugar = carboData["Sugar"].string!
+                                        }
+                                        
+                                        //====
+                                                                                
+                                        //refresh
+                                        cell.loadNutritionData()
+                                        
+                                    }//write end
+                                }//else no error
+                            }//end responseJSON
+                        }
+                        else {
+                            
+                            cell.loadNutritionData()
+                        }
                     }
                 }
             })
@@ -171,11 +293,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         let predicate = NSPredicate(format: "name BEGINSWITH [c]%@", searchTerm)
         let results = realm.objects(Food).filter(predicate)
 
-        if results.count == 0 {
-        
-            self.noDataLbl.hidden = false
-        }
-        else if results.count > 0 {
+        if results.count > 0 {
             
             //If data exist in local database
             
@@ -239,6 +357,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
 
                                     let food = Food()
                                     food.name = foodName
+                                    food.dataSource = kDataSourceHolmusk
                                     food.serving = foodDict.1["name"].string!
                                     
                                     let importantNutrients = foodDict.1["nutrients"]["important"]
@@ -316,12 +435,14 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                             for foodDict in json["Food"] {
                                 
                                 let food = Food()
+                                food.dataSource = kDataSourceKimonoLabs
                                 food.name = foodDict.1["name"]["text"].string!
                                 food.serving = foodDict.1["serving"]["text"].string!
                                 food.calories = foodDict.1["calories"]["text"].string!
                                 food.fat = foodDict.1["fat"]["text"].string!
                                 food.carbohydrate = foodDict.1["carbs"]["text"].string!
                                 food.protein = foodDict.1["protein"]["text"].string!
+                                food.hrefLink = foodDict.1["name"]["href"].string!
                                 
                                 self.realm.add(food, update: false)
                                 self.dataArray.append(food)
@@ -365,15 +486,31 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                     let itemArray = json["items"]
                     print("itemArray count: \(itemArray.count)\n")
                     
-                    self.imageLinkArray.removeAll(keepCapacity: true)
-                    
+                    var imageLinkArray:[String] = []
+        
                     for itemDict in itemArray {
                         
-                        self.imageLinkArray.append(itemDict.1["image"]["thumbnailLink"].string!)
+                        let imageLink = itemDict.1["image"]["thumbnailLink"].string!
+                        imageLinkArray.append(imageLink)
                     }
                     
-                    self.tableView.reloadData()
-                    
+                    //update Food object
+                    self.realm.write({ () -> Void in
+
+                        var i:Int = 0
+                        for food:Food in self.dataArray {
+                        
+                            var idx = i % imageLinkArray.count
+                            
+                            let imgLink = imageLinkArray[idx]
+                            food.imageLink = imgLink
+                            
+                            i++
+                        }
+                        
+                        self.tableView.reloadData()
+                    })
+
         }//end responseJSON
     }
 
@@ -430,20 +567,21 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         
             let cell = tableView.dequeueReusableCellWithIdentifier("CellIdentifier", forIndexPath: indexPath) as! FoodCell
             
-            //card visibility
-            if cell.isFront {
-                cell.viewFront.hidden = false
-                cell.viewBack.hidden = true
-            } else {
-                cell.viewFront.hidden = true
-                cell.viewBack.hidden = false
-            }
-            
             //data
             if indexPath.row < self.dataArray.count {
             
                 let food = self.dataArray[indexPath.row] as Food
                 cell.food = food
+
+                if food.isFront {
+                    cell.viewFront.hidden = false
+                    cell.viewBack.hidden = true
+                    
+                } else {
+                    
+                    cell.viewFront.hidden = true
+                    cell.viewBack.hidden = false
+                }
                 
                 //front view
                 cell.lblName.text = "per \(food.serving)"
@@ -454,15 +592,10 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 
                 //back view
                 cell.lblBackServings.text = cell.lblName.text
-            }
-            
-            //images
-            let imageIndex = indexPath.row % 10
-            
-            if imageIndex < self.imageLinkArray.count {
                 
-                let thumbLink = self.imageLinkArray[imageIndex] as String
-            
+                //image
+                let thumbLink = food.imageLink
+                
                 Alamofire.request(.GET, thumbLink).responseImage() {
                     (request, _, image, error) in
                     
@@ -473,7 +606,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                     }
                     else
                     {
-                        println("error" + error!.localizedDescription)
+                        println("error image: " + error!.localizedDescription)
                     }
                 }//end responseImage
             }
@@ -511,18 +644,8 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         
         self.searchTF.resignFirstResponder()
         
-        //dismiss autocomplete tableview only if the main table view is scrolled
         /*
-        if scrollView == self.tableView {
-            
-            if self.autocompleteTableView != nil {
-                
-                self.dismissAutocompleteTableView()
-            }
-        }
-        a*/
-        
-        /*
+        //parallax effect (not working...)
         let visibleCells = self.tableView.visibleCells() as! [FoodCell]
         
         for cell in visibleCells {
